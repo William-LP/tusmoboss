@@ -15,7 +15,7 @@ def load_stats(data) :
                 stats[letter] = 1
             t += 1
     for key, value in stats.items():
-        stats[key] = round(value * 100 / t,4)
+        stats[key] = round(value * 100 / t,4)        
     return stats
 
 def starting_with(letter,data):
@@ -47,10 +47,12 @@ def best_proposition(data, stats) :
     best_score = 0
     proposition = ""
     for word in data:
-        for letter in set(word) :
+        for letter in set(word) :            
             s += stats[letter]
         if s > best_score:
+            best_score = s
             proposition = word
+        s = 0
     return proposition                   
 
 
@@ -71,9 +73,9 @@ if __name__ == '__main__':
         not_a_letter = ""
         print(best_proposition(data, stats))
         opt = ''
-        while opt != 's' or opt != 'v':
+        while opt != 's' or opt != 'v' or opt != 'a':
             print('-' * 10)
-            opt = input("Supprimer (s) ou valider (v) des lettres : ")
+            opt = input("Supprimer (s), valider (v) des lettres ou afficher les mots possibles (a) : ")
             if opt == '!' :
                 break
             if opt == '!!' :
@@ -91,6 +93,8 @@ if __name__ == '__main__':
                     break    
                 if is_a_letter == '!!' :
                     exit()
-                data = known_letter(is_a_letter,data)
+                data = known_letter(is_a_letter,data)    
+            if opt == 'a' :
+                print(data)
             print(best_proposition(data, stats))
         print('-' * 20)
