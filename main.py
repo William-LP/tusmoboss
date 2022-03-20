@@ -30,14 +30,18 @@ def letter_not_in_word(wrong_guess,data) :
 def word_size(size,data):
     return [x for x in data if len(x)==size]
 
-def known_letter(word,data):
+def filter_letter(word,data, direction):
     to_delete = []
     i = 0
     for letter in word :
         if letter != '?':
             for w in data :  
-                if w[i] != letter :                
-                    to_delete.append(w)
+                if direction == "in":
+                    if w[i] == letter or letter not in w:            
+                        to_delete.append(w)                        
+                if direction == "out":
+                    if w[i] != letter :                
+                        to_delete.append(w)                   
         i += 1
     return list(set(data) - set(to_delete))
 
@@ -53,7 +57,8 @@ def best_proposition(data, stats) :
             best_score = s
             proposition = word
         s = 0
-    return proposition                   
+    return proposition, round(100 / len(data),2)
+
 
 
 if __name__ == '__main__':  
@@ -71,11 +76,12 @@ if __name__ == '__main__':
         data = starting_with(first_letter,data)     
         data = word_size(int(word_length), data)
         not_a_letter = ""
-        print(best_proposition(data, stats))
+        proposition, ratio = best_proposition(data, stats)
+        print(proposition + '('+ str(ratio) +'%)')
         opt = ''
-        while opt != 's' or opt != 'v' or opt != 'a':
-            print('-' * 10)
-            opt = input("Supprimer (s), valider (v) des lettres ou afficher les mots possibles (a) : ")
+        while opt != 's' or opt != 'r' or opt != 'a' or opt != 'j':
+            print('-' * 10) 
+            opt = input("Supprimer (s), valider des lettres rouge (r) ou jaunes (j) ou afficher les mots possibles (a) : ")
             if opt == '!' :
                 break
             if opt == '!!' :
@@ -87,14 +93,22 @@ if __name__ == '__main__':
                 if not_a_letter == '!!' :
                     exit()
                 data = letter_not_in_word(not_a_letter,data)
-            if opt == 'v' :
-                is_a_letter = input("Saisir le mot avec des joker (bo?j?ur) : ")
+            if opt == 'r' :
+                is_a_letter = input("Saisir les lettres rouges : ")
                 if is_a_letter == '!' :
                     break    
                 if is_a_letter == '!!' :
                     exit()
-                data = known_letter(is_a_letter,data)    
+                data = filter_letter(is_a_letter,data,"out")    
+            if opt == 'j' :
+                is_a_letter = input("Saisir les lettres jaunes : ")
+                if is_a_letter == '!' :
+                    break    
+                if is_a_letter == '!!' :
+                    exit()
+                data = filter_letter(is_a_letter,data,"in")                    
             if opt == 'a' :
                 print(data)
-            print(best_proposition(data, stats))
+            proposition, ratio = best_proposition(data, stats)
+            print(proposition + '('+ str(ratio) +'%)')
         print('-' * 20)
